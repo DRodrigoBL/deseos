@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { ListaItem, Lista } from '../../app/clases/index';
+import { AlertController, NavController } from 'ionic-angular';
+import { ListaDeseosService }  from '../../app/services/lista-deseos.service'
 
 @Component({
   selector: 'agregar',
@@ -8,11 +10,15 @@ import { ListaItem, Lista } from '../../app/clases/index';
 
 export class AgregarComponent implements OnInit {
 
-  nombreLista: string;
+  nombreLista: string = "";
   nombreItem: string = "";
   items: ListaItem[] = [];
 
-  constructor() {
+  constructor(
+      public alertCtrl : AlertController ,
+      public navCtrl : NavController ,
+      public _listaDeseosService : ListaDeseosService
+      ) {
   }
 
   ngOnInit() {
@@ -33,6 +39,25 @@ export class AgregarComponent implements OnInit {
 
   eliminarItem(i:number){
     this.items.splice(i,1);
+  }
+
+  guardarLista(){
+    if ( this.nombreLista.length == 0 ){
+      let alert = this.alertCtrl.create({
+        title: 'Nombre de la lista',
+        subTitle: 'El nombre de la lista es necesario',
+        buttons: ['OK']
+      });
+      alert.present();
+
+      return;
+    }
+    let lista = new Lista( this.nombreLista );
+    lista.items = this.items;
+    //this._listaDeseosService.listas.push( lista );
+    this._listaDeseosService.agregarLista( lista );
+    this.navCtrl.pop();
+
   }
 
 }
